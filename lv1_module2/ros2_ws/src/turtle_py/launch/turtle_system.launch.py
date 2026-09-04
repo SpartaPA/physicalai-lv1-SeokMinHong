@@ -7,17 +7,17 @@
   /polygon_action_server        DrawPolygon 액션 서버
 
 launch 인자
-  use_examples:=true    학생의 turtle_py 대신 turtle_examples 의 ex03_/ex06_ 노드를 띄웁니다.
+  use_examples:=true    학생의 turtle_py 대신 turtle_py 의 ex03_/ex06_ 노드를 띄웁니다.
                         (turtle_py 를 아직 안 만들었어도 launch 실습이 가능하도록)
   spawn_second:=true    /spawn 으로 turtle2 를 만들고, 네임스페이스 turtle2 로 두 번째 발행자를 띄웁니다.
-  params_file:=<경로>   기본은 share/turtle_examples/config/params.yaml
+  params_file:=<경로>   기본은 share/turtle_py/config/params.yaml
   student_package:=turtle_py            (기본) 학생 패키지 이름
   student_action_exec:=polygon_action_server  학생 액션 서버 실행파일 이름 (다르면 바꾸세요)
 
 실행
-  ros2 launch turtle_examples turtle_system.launch.py use_examples:=true
-  ros2 launch turtle_examples turtle_system.launch.py use_examples:=true spawn_second:=true
-  ros2 launch turtle_examples turtle_system.launch.py             # 학생의 turtle_py 사용
+  ros2 launch turtle_py turtle_system.launch.py use_examples:=true
+  ros2 launch turtle_py turtle_system.launch.py use_examples:=true spawn_second:=true
+  ros2 launch turtle_py turtle_system.launch.py             # 학생의 turtle_py 사용
 
 파라미터 주입 방법 두 가지
   (a) launch 안에서 직접:  parameters=[{'publish_rate': 10.0}]
@@ -110,13 +110,13 @@ def _second_publisher(package, pub_exec, params_file, condition):
 
 
 def generate_launch_description():
-    pkg_share = get_package_share_directory('turtle_examples')
+    pkg_share = get_package_share_directory('turtle_py')
     default_params = os.path.join(pkg_share, 'config', 'params.yaml')
 
     # ---------- launch 인자 선언 ----------
     use_examples_arg = DeclareLaunchArgument(
         'use_examples', default_value='false',
-        description='true 면 turtle_examples 의 예제 노드로 시스템을 구성')
+        description='true 면 turtle_py 의 예제 노드로 시스템을 구성')
     spawn_second_arg = DeclareLaunchArgument(
         'spawn_second', default_value='false',
         description='true 면 turtle2 를 spawn 하고 네임스페이스 turtle2 로 발행자를 하나 더 띄움')
@@ -146,7 +146,7 @@ def generate_launch_description():
 
     # ---------- 시스템 노드 3개 (두 가지 구성 중 조건으로 하나만 활성) ----------
     example_nodes = _system_nodes(
-        package='turtle_examples',
+        package='turtle_py',
         pub_exec='ex03_distance_publisher',
         sub_exec='ex03_distance_subscriber',
         action_exec='ex06_polygon_action_server',
@@ -179,7 +179,7 @@ def generate_launch_description():
     both_true_student = PythonExpression([
         "'", spawn_second, "'.lower() in ('true', '1') and '", use_examples, "'.lower() not in ('true', '1')"])
     second_pub_example = _second_publisher(
-        'turtle_examples', 'ex03_distance_publisher', params_file, IfCondition(both_true_examples))
+        'turtle_py', 'ex03_distance_publisher', params_file, IfCondition(both_true_examples))
     second_pub_student = _second_publisher(
         student_pkg, 'turtle_distance_publisher', params_file, IfCondition(both_true_student))
 

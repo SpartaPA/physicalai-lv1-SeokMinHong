@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>turtle_examples</name>
+  <name>turtle_py</name>
   <version>0.1.0</version>
   <description>
     Physical AI Lv.1 모듈 ② 문제 5~9 학생용 예제 코드 (ament_python).
     학생이 만드는 패키지 이름은 turtle_py 입니다. 이 예제 패키지는 이름 충돌을 피하려고
-    turtle_examples 라는 별도 이름을 씁니다. 여기 코드를 참고해 turtle_py 에 직접 구현하세요.
+    turtle_py 라는 별도 이름을 씁니다. 여기 코드를 참고해 turtle_py 에 직접 구현하세요.
   </description>
-  <maintainer email="student@example.com">student</maintainer>
+  <maintainer email="hsmint.hong@gmail.com">Seok Min Hong</maintainer>
   <license>Apache-2.0</license>
 
   <!--
@@ -17,7 +17,7 @@
       Python 패키지는 컴파일이 없으니 exec_depend 만으로도 "실행" 은 되지만,
       colcon 이 "빌드 순서" 를 정할 때도 이 선언을 봅니다.
     - turtle_interfaces 를 <depend> 로 적었기 때문에 colcon 은 의존 그래프를 위상 정렬해
-      turtle_interfaces → turtle_examples 순으로 빌드합니다. 선언을 빼면 두 패키지가
+      turtle_interfaces → turtle_py 순으로 빌드합니다. 선언을 빼면 두 패키지가
       병렬로 빌드되다가 "from turtle_interfaces.action import DrawPolygon" 이
       실행 시점에 ModuleNotFoundError 를 낼 수 있습니다.
     - 인터페이스를 노드 패키지와 분리한 이유: 인터페이스는 C++ 패키지(turtle_cpp)도

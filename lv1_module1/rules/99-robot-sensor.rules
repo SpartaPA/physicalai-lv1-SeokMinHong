@@ -1,0 +1,2 @@
+SUBSYSTEM=="block", KERNEL=="loop*", ATTR{loop/backing_file}=="*/lidar.img", SYMLINK+="robot_lidar", MODE="0660", GROUP="dialout"
+SUBSYSTEM=="block", KERNEL=="loop*", ATTR{loop/backing_file}=="*/imu.img", SYMLINK+="robot_imu", MODE="0660", GROUP="dialout"
