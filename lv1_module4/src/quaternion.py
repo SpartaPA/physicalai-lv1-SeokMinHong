@@ -31,7 +31,7 @@ def matrix_to_quaternion(R) -> np.ndarray:
     반환값은 반드시 정규화하고, w >= 0 이 되도록 부호를 맞춘다 (비교가 편해진다).
     """
     # TODO: 문제 3-1
-    raise NotImplementedError("matrix_to_quaternion 을 구현하세요")
+
 
 
 def quaternion_to_matrix(q) -> np.ndarray:

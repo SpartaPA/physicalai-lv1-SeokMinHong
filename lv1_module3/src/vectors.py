@@ -82,7 +82,7 @@ def angle_between(a, b, degrees: bool = True) -> float:
     # TODO: 문제 1-1
     na, nb = norm(a), norm(b)
     if na < 1e-12 or nb < 1e-12:
-        raise ValueError("x or y is 0 vector")
+        raise ValueError("벡터 중 하나가 영벡터입니다.")
 
     theta = np.arccos(np.clip(dot(a, b) / (na * nb), -1., 1.))
     return float(np.degrees(theta)) if degrees else float(theta)
@@ -100,7 +100,7 @@ def normalize(v, eps: float = 1e-12) -> np.ndarray:
     v = as_vector(v)
     n = norm(v)
     if n < eps:
-        raise ValueError(f"v is near zero {v}")
+        raise ValueError(f"v가 영벡터입니다.")
     return v / n
 
 
@@ -115,9 +115,9 @@ def project(a, b) -> np.ndarray:
     # TODO: 문제 1-3
     a, b = as_vector(a), as_vector(b)
     if a.shape != b.shape:
-        raise ValueError("x and y must have the same shape")
+        raise ValueError("차원이 다릅니다.")
     elif norm(b) < 1e-12:
-        raise ValueError("y is zero")
+        raise ValueError("b가 영벡터입니다.")
     return np.multiply(dot(a, b) / dot(b, b), b)
 
 
@@ -154,7 +154,7 @@ def cross(a, b) -> np.ndarray:
     # TODO: 문제 1-4
     a, b = as_vector(a), as_vector(b)
     if a.shape != (3,) or b.shape != (3,):
-        raise ValueError("x 또는 y가 3차원 벡터가 아닙니다.")
+        raise ValueError("a 또는 b가 3차원 벡터가 아닙니다.")
     skew_a = skew(a)
     return skew_a @ b
 
@@ -167,7 +167,7 @@ def plane_normal(P1, P2, P3) -> np.ndarray:
     """
     # TODO: 문제 1-5
     P1, P2, P3 = as_vector(P1), as_vector(P2), as_vector(P3)
-    n = cross(P2 - P1, P3-P1)
+    n = cross(P2 - P1, P3 - P1)
     if norm(n) < 1e-12:
         raise ValueError("세 포인트가 직선입니다.")
     return normalize(n)
@@ -241,7 +241,7 @@ def det(A) -> float:
 
     row, col = A.shape
     if row != col:
-        raise ValueError("A must be square")
+        raise ValueError("A가 정사각행렬이 아닙니다.")
     U, _, swaps = row_echelon(A)
     return ((-1.) if swaps % 2 else 1.) * np.diagonal(U).prod()
 
