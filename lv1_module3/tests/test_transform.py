@@ -14,6 +14,7 @@ from src.transform import (
     inv_T,
     least_squares_normal_equation,
     make_T,
+    to_homogeneous,
     transform_direction,
     transform_point,
     transform_points,
@@ -29,34 +30,59 @@ def T():
 
 def test_inv_T_gives_identity(T):
     # TODO: inv_T(T) @ T 와 T @ inv_T(T) 가 모두 4x4 단위행렬인지 검사
-    raise NotImplementedError("test_inv_T_gives_identity 를 작성하세요")
+    assert (inv_T(T) @ T).shape == (4, 4)
+    assert (T @ inv_T(T)).shape == (4, 4)
 
 
 def test_inv_T_matches_generic_inverse(T):
     # TODO: inv_T(T) 가 np.linalg.inv(T) 와 일치하는지 검사 (np.linalg 는 검산용)
-    raise NotImplementedError("test_inv_T_matches_generic_inverse 를 작성하세요")
+    assert np.allclose(inv_T(T), np.linalg.inv(T)) # 검산용
 
 
 def test_point_and_direction_differ(T):
     # TODO: 같은 벡터를 점(w=1)/방향(w=0)으로 변환하면 결과가 다르고,
     #       그 차이가 정확히 병진 벡터 T[:3, 3] 이며,
     #       방향 변환은 길이를 보존하는지 검사
-    raise NotImplementedError("test_point_and_direction_differ 를 작성하세요")
+    pv = np.array([1., 2., 3.], dtype=np.float64)
+    Tp = transform_point(T, pv)
+    Tv = transform_direction(T, pv)
+
+    assert np.allclose(Tp - Tv, T[:3, 3])
+
+    assert np.isclose(np.sum(np.square(Tv)), np.sum(np.square(pv)))
 
 
 def test_transform_points_is_vectorized(T):
     # TODO: (N,3) 점군을 한 번에 변환한 결과가
     #       transform_point 를 반복문으로 돌린 결과와 같은지 검사
-    raise NotImplementedError("test_transform_points_is_vectorized 를 작성하세요")
+    Ps = np.array([
+        [1., 2., 3.],
+        [4., 5., 6.],
+        [7., 8., 9.]
+    ], dtype=np.float64)
+    T_all = transform_points(T, Ps)
+    for i in range(Ps.shape[0]):
+        assert np.allclose(transform_point(T, Ps[i]), T_all[i])
 
 
 def test_roundtrip_through_inverse(T):
     # TODO: T 로 보냈다가 inv_T(T) 로 되돌리면 원래 점군이 나오는지 검사
-    raise NotImplementedError("test_roundtrip_through_inverse 를 작성하세요")
+    rng = np.random.default_rng(42)
+    Ps = rng.standard_normal((50, 3))
+    assert np.allclose(transform_points(inv_T(T), transform_points(T, Ps)), Ps)
 
 
 def test_least_squares_matches_lstsq():
     # TODO: 노이즈를 섞은 과결정 문제를 만들어
     #       least_squares_normal_equation 의 해가 np.linalg.lstsq 와 일치하고
     #       잔차가 A 의 열공간에 수직(A^T r = 0)인지 검사
-    raise NotImplementedError("test_least_squares_matches_lstsq 를 작성하세요")
+    rng = np.random.default_rng(42)
+    A = rng.standard_normal((60, 4))
+    x_true = np.array([1., -2., 0.5, 3.], dtype=np.float64)
+    b = A @ x_true + 1e-3 * rng.standard_normal(60)
+
+    x, residuals = least_squares_normal_equation(A, b)
+
+    assert np.allclose(x, np.linalg.lstsq(A, b)[0]) # 검산용
+    assert np.isclose(np.sum(residuals), np.linalg.lstsq(A, b)[1]) # 검산용
+    assert np.allclose(A.T @ residuals, 0.)
