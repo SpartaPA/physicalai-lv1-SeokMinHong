@@ -32,15 +32,15 @@ def make_T(R, t) -> np.ndarray:
     R 이 3x3 이 아니면 ValueError.
     """
     # TODO: 문제 5-1
-    R = np.array(R, dtype=np.float64)
+    R = np.array(R, dtype=float)
     if R.shape != (3, 3):
         raise ValueError("R이 3x3이 아닙니다.")
 
-    t = np.array(t, dtype=np.float64)
+    t = np.array(t, dtype=float)
     if t.shape != (3, ):
         raise ValueError("t가 3, 이 아닙니다.")
 
-    return np.vstack((np.hstack((R, t.reshape(-1, 1))), np.array([0., 0., 0., 1.], dtype=np.float64)))
+    return np.vstack((np.hstack((R, t.reshape(-1, 1))), np.array([0., 0., 0., 1.], dtype=float)))
 
 
 def inv_T(T) -> np.ndarray:
@@ -55,12 +55,12 @@ def inv_T(T) -> np.ndarray:
     4x4 가 아니면 ValueError.
     """
     # TODO: 문제 5-1
-    T = np.array(T, dtype=np.float64)
+    T = np.array(T, dtype=float)
     if T.shape != (4,4):
         raise ValueError("T가 4x4가 아닙니다.")
 
     R, t = T[:3, :3], T[:3, -1]
-    return np.vstack((np.hstack((R.T, -R.T @ t.reshape(-1, 1))), np.array([0., 0., 0., 1.], dtype=np.float64)))
+    return np.vstack((np.hstack((R.T, -R.T @ t.reshape(-1, 1))), np.array([0., 0., 0., 1.], dtype=float)))
 
 
 def inv_T_batch(Ts) -> np.ndarray:
@@ -74,7 +74,7 @@ def inv_T_batch(Ts) -> np.ndarray:
           `np.einsum("nij,nj->ni", ...)` 로 쓸 수 있다.
     """
     # TODO: 문제 5-4
-    Ts = np.array(Ts, dtype=np.float64)
+    Ts = np.array(Ts, dtype=float)
     if Ts.ndim != 3 or Ts.shape[1] != 4 or Ts.shape[2] != 4:
         raise ValueError("동차변환의 묶음이 아닙니다.")
 
@@ -95,7 +95,7 @@ def to_homogeneous(P, w: float = 1.0) -> np.ndarray:
     w = 1 이면 점(위치), w = 0 이면 방향(벡터).
     """
     # TODO: 문제 5-2
-    P = np.array(P, dtype=np.float64)
+    P = np.array(P, dtype=float)
     if not ((P.ndim == 1 and P.shape == (3,)) or (P.ndim == 2 and P.shape[1] == 3)):
         raise ValueError("점 또는 점들이 3차원이 아닙니다.")
 
@@ -105,11 +105,11 @@ def to_homogeneous(P, w: float = 1.0) -> np.ndarray:
 def transform_point(T, p) -> np.ndarray:
     """점 변환 (w = 1): 회전과 병진이 모두 적용된다. 반환은 (3,)."""
     # TODO: 문제 5-2
-    T = np.array(T, dtype=np.float64)
+    T = np.array(T, dtype=float)
     if T.shape != (4,4):
         raise ValueError("동차 행렬이 아닙니다.")
 
-    p = np.array(p, dtype=np.float64)
+    p = np.array(p, dtype=float)
     if p.shape != (3, ) or p.ndim != 1:
         raise ValueError("점이 아닙니다.")
 
@@ -119,11 +119,11 @@ def transform_point(T, p) -> np.ndarray:
 def transform_direction(T, v) -> np.ndarray:
     """방향 변환 (w = 0): 회전만 적용되고 병진은 무시된다. 반환은 (3,)."""
     # TODO: 문제 5-2
-    T = np.array(T, dtype=np.float64)
+    T = np.array(T, dtype=float)
     if T.shape != (4, 4):
         raise ValueError("동차 행렬이 아닙니다.")
 
-    v = np.array(v, dtype=np.float64)
+    v = np.array(v, dtype=float)
     if v.shape != (3,) or v.ndim != 1:
         raise ValueError("벡터가 아닙니다.")
 
@@ -137,11 +137,11 @@ def transform_points(T, P, w: float = 1.0) -> np.ndarray:
           메모리 접근도 행 방향이라 캐시에 유리하다.
     """
     # TODO: 문제 5-2 / 6-2
-    T = np.array(T, dtype=np.float64)
+    T = np.array(T, dtype=float)
     if T.shape != (4, 4):
         raise ValueError("동차 행렬이 아닙니다.")
 
-    P = np.array(P, dtype=np.float64)
+    P = np.array(P, dtype=float)
     if not ((P.ndim == 1 and P.shape == (3,)) or (P.ndim == 2 and P.shape[1] == 3)):
         raise ValueError("점군 또는 점이 아닙니다.")
 
@@ -162,8 +162,8 @@ def least_squares_normal_equation(A, b):
     residual : b - A x
     """
     # TODO: 문제 5-5
-    A = np.array(A, dtype=np.float64)
-    b = np.array(b, dtype=np.float64)
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
 
     A_inv = inverse_gauss_jordan(A.T @ A)
     x = A_inv @ (A.T @ b)

@@ -121,8 +121,8 @@ def default_chain() -> CoordinateChain:
     #   T_base_link   = make_T(rot_z(...), [...])
     #   T_link_camera = make_T(rot_y(...) @ rot_x(...), [...])
     #   return CoordinateChain("base").add(...).add(...)
-    T_base_link = make_T(rot_z(np.deg2rad(30)), [0.30, 0.00, 0.40])
-    T_link_camera = make_T(rot_y(np.deg2rad(-20.0)) @ rot_x(np.deg2rad(90.0)), [0.10, 0.05, 0.15])
+    T_base_link = make_T(rot_z(np.deg2rad(22.5)), [0.35, 0.05, 0.45])
+    T_link_camera = make_T(rot_y(np.deg2rad(-22.5)) @ rot_x(np.deg2rad(67.5)), [0.12, 0.04, 0.18])
     return CoordinateChain("base").add("base", "link", T_base_link).add("link", "camera", T_link_camera)
 
 

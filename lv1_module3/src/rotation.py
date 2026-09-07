@@ -32,9 +32,9 @@ def rot_x(theta: float) -> np.ndarray:
     # TODO: 문제 2-1
     c, s = np.cos(theta), np.sin(theta)
     return np.array([
-        [1, 0, 0],
-        [0, c, -s],
-        [0, s, c]
+        [1., 0., 0.],
+        [0., c, -s],
+        [0., s, c]
     ])
 
 
@@ -46,9 +46,9 @@ def rot_y(theta: float) -> np.ndarray:
     # TODO: 문제 2-1
     c, s = np.cos(theta), np.sin(theta)
     return np.array([
-        [c, 0, s],
-        [0, 1, 0],
-        [-s, 0, c]
+        [c, 0., s],
+        [0., 1., 0.],
+        [-s, 0., c]
     ])
 
 
@@ -56,9 +56,9 @@ def rot_z(theta: float) -> np.ndarray:
     """z축 기준 회전 행렬 (theta 는 라디안). z 성분은 보존된다."""
     # TODO: 문제 2-1
     c, s = np.cos(theta), np.sin(theta)
-    return np.array([[c, -s, 0.0],
-        [s, c, 0],
-        [0, 0, 1]
+    return np.array([[c, -s, 0.],
+        [s, c, 0.],
+        [0., 0., 1.]
     ])
 
 
@@ -92,7 +92,7 @@ def gram_schmidt(A) -> np.ndarray:
     앞선 열들에 종속인 열이 있으면 ValueError.
     """
     # TODO: 문제 3-2
-    A = np.array(A, dtype=np.float64)
+    A = np.array(A, dtype=float)
 
     result = A.copy()
     result[:, 0] = normalize(result[:, 0])
@@ -100,7 +100,7 @@ def gram_schmidt(A) -> np.ndarray:
         v = result[:, j]
         for i in range(j):
             v -= (result[:, i] @ result[:, j]) * result[:, i]
-        norm_v = v / np.sqrt(v @ v)
+        norm_v = np.sqrt(v @ v)
         if norm_v <= 1e-12:
             raise ValueError("오차가 너무 큽니다.")
         result[:, j] = v / norm_v
@@ -125,7 +125,7 @@ def is_rotation(R, atol: float = 1e-8) -> bool:
     3x3 이 아니면 False.
     """
     # TODO: 문제 3-2
-    R = np.array(R, dtype=np.float64)
+    R = np.array(R, dtype=float)
     return R.shape == (3, 3) and (np.allclose(R.T @ R, np.eye(R.shape[0]), atol=atol) and np.isclose(det(R), 1., atol=atol))
 
 
@@ -149,7 +149,7 @@ def axis_angle_from_matrix(R, atol: float = 1e-8):
     angle : 회전각 [rad], 0 <= angle <= pi
     """
     # TODO: 문제 6-4
-    R = np.array(R, dtype=np.float64)
+    R = np.array(R, dtype=float)
     if not is_rotation(R, atol=atol):
         raise ValueError("회전 행렬이 아닙니다.")
 
@@ -157,7 +157,7 @@ def axis_angle_from_matrix(R, atol: float = 1e-8):
     theta = float(np.arccos(cos_theta))
 
     if np.isclose(theta, 0, atol=atol):
-        return np.array([1., 0., 0.], dtype=np.float64), 0.
+        return np.array([1., 0., 0.], dtype=float), 0.
 
     eigenvalues, eigenvectors = np.linalg.eig(R)
     axis = normalize(np.real(eigenvectors[:, int(np.argmin(np.abs(eigenvalues - 1.0)))]))
@@ -185,7 +185,7 @@ def quaternion_from_axis_angle(axis, angle: float) -> np.ndarray:
     (그래야 문제 6-5 에서 바로 비교할 수 있다).
     """
     # TODO: 문제 6-5
-    axis = np.array(axis, dtype=np.float64)
+    axis = np.array(axis, dtype=float)
     if axis.shape != (3,):
         raise ValueError("3차원 벡터가 아닙니다.")
 

@@ -84,5 +84,5 @@ def test_least_squares_matches_lstsq():
     x, residuals = least_squares_normal_equation(A, b)
 
     assert np.allclose(x, np.linalg.lstsq(A, b)[0]) # 검산용
-    assert np.isclose(np.sum(residuals), np.linalg.lstsq(A, b)[1]) # 검산용
+    assert np.isclose(np.sum(residuals ** 2), np.linalg.lstsq(A, b)[1]) # 검산용
     assert np.allclose(A.T @ residuals, 0.)

@@ -234,7 +234,7 @@ def det(A) -> float:
     정사각 행렬이 아니면 ValueError.
     """
     # TODO: 문제 1-6
-    A = np.array(A, dtype=np.float64)
+    A = np.array(A, dtype=float)
 
     if A.ndim != 2:
         raise ValueError("A가 행렬이 아닙니다.")
@@ -264,7 +264,7 @@ def gauss_eliminate(A, b, pivoting: bool = True, verbose: bool = False):
     피벗이 0 이면 해가 유일하지 않다 -> ZeroDivisionError.
     """
     # TODO: 문제 4-1
-    A = np.array(A, dtype=np.float64)
+    A = np.array(A, dtype=float)
     if A.ndim != 2:
         raise ValueError("행렬이 아닙니다.")
 
@@ -282,7 +282,8 @@ def gauss_eliminate(A, b, pivoting: bool = True, verbose: bool = False):
         print(U)
     steps = [U.copy()]
     m, n = A.shape
-    for row, col in enumerate(n):
+    row = 0
+    for col in range(n):
         if row >= m:
             break
         pivot = row
@@ -303,6 +304,7 @@ def gauss_eliminate(A, b, pivoting: bool = True, verbose: bool = False):
             print("가우스 소거")
             print(U)
         steps.append(U.copy())
+        row += 1
 
     root = []
     for row in range(n):
@@ -325,7 +327,7 @@ def inverse_gauss_jordan(A) -> np.ndarray:
     (`np.linalg.inv` 를 부르지 말고 소거로 직접 구한다)
     """
     # TODO: 문제 4-3
-    A = np.array(A, dtype=np.float64)
+    A = np.array(A, dtype=float)
 
     if A.ndim != 2:
         raise ValueError("A 행렬이 아닙니다.")
@@ -336,8 +338,8 @@ def inverse_gauss_jordan(A) -> np.ndarray:
 
     I = np.eye(A.shape[0])
     U = np.hstack((A, I))
-
-    for row, col in enumerate(n):
+    row = 0
+    for col in range(n):
         if row >= m:
             break
         pivot = row + np.argmax(np.abs(U[row:, col]))
@@ -351,4 +353,5 @@ def inverse_gauss_jordan(A) -> np.ndarray:
                 continue
             factor = U[r, col] / U[row, col]
             U[r, col:] -= U[row, col:] * factor
+        row += 1
     return U[:, m:]
