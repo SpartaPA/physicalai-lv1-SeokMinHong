@@ -13,4 +13,6 @@ add_executable(cpp_basics
 add_executable(loop_demo sensors/loop.cpp)
 add_executable(heap_stack_demo sensors/heap_stack.cpp)
 add_executable(count_demo sensors/count.cpp)
+
 add_executable(leak_demo sensors/leaks.cpp)
+target_compile_options(leak_demo PRIVATE -fsanitize=address)
