@@ -25,7 +25,7 @@ void make_safe() {
 int main(void) {
 
     std::cout << "메모리 누수\n";
-    make_leaks();
+    make_safe();
 
     return 0;
 }

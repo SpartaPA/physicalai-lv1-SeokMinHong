@@ -85,7 +85,23 @@ unordered_map / vector / count_if
 
 ### 2-5. 누수 검출 결과 -> 수정 후 결과
 
+`new`를 사용하여 동적 할당한 경우 `delete`를 호출하지 않으면 발생되는 결과
 
+**fasanitize**를 사용하여 메모리 누수를 검출한 결과
+
+![fasanitize_leak](./images/03_leak_fasanitize.png)
+
+**valgrind**를 사용하여 메모리 누수를 검출한 결과
+
+![valgrind_leak](./images/04_leak_valgrind.png)
+
+fsanitize와 valgrind 모두 메모리 누수를 검출합니다. `delete`를 호출하여 메모리를 해제하면, 더 이상 메모리 누수가 발생하지 않습니다.
+
+`make_unique`를 사용하여 스마트 포인터 사용할 경우
+
+![make_unique](./images/05_smart_pointer.png)
+
+결과: 스마트 포인터를 사용하여 동적 할당된 객체를 자동으로 관리하면, 메모리 누수를 방지할 수 있습니다. 스마트 포인터는 객체의 소유권을 관리하며, 더 이상 필요하지 않을 때 자동으로 메모리를 해제합니다.
 
 ## 3. rclpy 노드 작성 - 거북이 상태 발행자와 구독자
 
@@ -119,12 +135,12 @@ float32 angular_velocity
 ros2 topic hz /turtle_distance
 ```
 
-![turtle_distance_hz](./images/03_turtle_distance_hz.png)
+![turtle_distance_hz](./images/05_turtle_distance_hz.png)
 
 
 ### 3-3. 구독자 경고 로그 (터미널 출력)
 
-![turtle_distance_warning](./images/04_turtle_warning.png)
+![turtle_distance_warning](./images/06_turtle_warning.png)
 
 ### 3-4. 구독자 2개 동시 수신 확인 (양쪽 로그)
 
