@@ -17,12 +17,12 @@
 
 | 작업 | 위치 | 지연 예산 | 데이터량 | 근거 |
 | --- | --- | --- | --- | --- |
-| 모터 속도 제어 | 임베디드 (MCU) | ≤ 0.5 ms | 엔코더 8 KB/s + PWM 명령 4 KB/s = 12 KB/s (내부 버스) | 1 kHz 제어 루프 주기의 절반. LTE RTT 30~100 ms는 예산의 60~200배라 네트워크 경유가 원천 불가. 통신 두절 시에도 동작해야 하는 안전 필수 경로 |
+| 모터 속도 제어 | 임베디드 (MCU) | ≤ 0.5 ms | 엔코더 8 KB/s + PWM 명령 4 KB/s = 12 KB/s (내부 버스) | 1 kHz 제어 루프 주기의 절반. LTE RTT 30 ~ 100 ms는 예산의 60 ~ 200배라 네트워크 경유가 원천 불가. 통신 두절 시에도 동작해야 하는 안전 필수 경로 |
 | 장애물 감지 | Edge AI | ≤ 66.67 ms| 43.2 KB/s  | 스캔 주기 내 처리로 큐 적체 방지. 5 km/h 주행 시 감지 67 ms + 판단 30 ms + 제동 응답 50 ms ≈ 20 cm 이동 후 반응 |
-| 보행자 인식 | Edge AI | ≤ 66.67 ms | 165.9 MB/s | 원시 영상이 업링크 실측치의 66~266배라 전송 자체가 불가.  |
-| 지도 기반 경로 계획 | 클라우드 | ≤ 1~5 s | 요청 ~200 B, 응답 경로 5~50 KB  | 전역 도로망·실시간 교통·타 로봇 배차를 함께 봐야 최적해 도출. 초 단위 지연 허용, 두절 시 기존 경로 주행으로 폴백 |
-| 배달 완료 사진 업로드 | 클라우드 | ≤ 수 초~수 분 | JPEG 1 장 ≈ 0.5~2 MB, 배달 1 건당 1 회 | 배송 증빙용으로 실시간성 없음. store-and-forward 방식, 음영 구간은 로컬 버퍼링 후 지연 전송 |
-| 운행 로그 집계 | 클라우드 | ≤ 수 분~수 시간 | 원시 로그 수십 KB/s 를 로컬 축적 → 압축 후 배치 업로드, 수십 MB/일 | 사후 분석·고장 예지용. 원시 센서 전량은 하루 수 TB라 온보드 집계 후 유휴 시간 일괄 업로드 |
+| 보행자 인식 | Edge AI | ≤ 66.67 ms | 165.9 MB/s | 원시 영상이 업링크 실측치의 66 ~ 266배라 전송 자체가 불가.  |
+| 지도 기반 경로 계획 | 클라우드 | ≤ 1 ~ 5 s | 요청 ~ 200 B, 응답 경로 5 ~ 50 KB  | 전역 도로망·실시간 교통·타 로봇 배차를 함께 봐야 최적해 도출. 초 단위 지연 허용, 두절 시 기존 경로 주행으로 폴백 |
+| 배달 완료 사진 업로드 | 클라우드 | ≤ 수 초 ~ 수 분 | JPEG 1 장 ≈ 0.5 ~ 2 MB, 배달 1 건당 1 회 | 배송 증빙용으로 실시간성 없음. store-and-forward 방식, 음영 구간은 로컬 버퍼링 후 지연 전송 |
+| 운행 로그 집계 | 클라우드 | ≤ 수 분 ~ 수 시간 | 원시 로그 수십 KB/s 를 로컬 축적 → 압축 후 배치 업로드, 수십 MB/일 | 사후 분석·고장 예지용. 원시 센서 전량은 하루 수 TB라 온보드 집계 후 유휴 시간 일괄 업로드 |
 
 ### 1-2. 카메라 원시 영상 전송량
 
@@ -48,15 +48,6 @@ LTE 대비 LTE 업링크 95Mbps, 다운로드 100Mbps로는 원시 영상 전송
 
 ![sequence diagram](./images/01_sequence_diagram.png)
 
-
-```
-  엔코더 2 kHz ─┐
-  IMU 400 Hz ───┼─▶ [인지] 오도메트리 400 Hz ─┐
-  라이다 15 Hz ─┴─▶ [인지] 장애물 15 Hz ──────┼─▶ [판단] 지역 계획 10~20 Hz ─┐
-  카메라 60 fps ──▶ [인지] 보행자 5~10 Hz ────┘        ▲                      │
-                                                      │ 전역 경로 0.2~1 Hz    ▼
-                                            (클라우드 지도)          [제어] PID 2 kHz ─▶ 모터
-```
 
 ### 1-4. Hard / Firm / Soft 분류표
 
@@ -166,10 +157,60 @@ idProduct으로 구분을 한다. 제조사가 같아도 제품 ID가 달라 서
 
 ### 3-1. 저장소 URL / PR URL
 
+- 저장소 URL: [`저장소 URL`](https://github.com/hsmint/simple-git-test)
+- PR URL: [`PR URL`](https://github.com/hsmint/simple-git-test/pull/1)
+
 ### 3-2. PR리뷰 코멘트와 반영 커밋
+
+![PR Comment](./images/05_PR_comment.png)
 
 ### 3-3. 충돌이 난 파일과 줄
 
+![Merge conflict](./images/06_merge_conflict.png)
+
+충돌이 난 파일: `README.md`
+
+11번 줄부터 충돌 발생 했다.
+
+충돌 표식
+- `<<<<<<<`: Merge 시작 지점. 현재 브랜치의 내용이 이 아래에 위치한다.
+- `=======`: Merge 구분 지점. 현재 브랜치와 병합하려는 브랜치의 내용이 이 아래에 위치한다.
+- `>>>>>>>`: Merge 종료 지점. 병합하려는 브랜치의 내용이 이 위에 위치한다.
+
 ### 3-4. merge 방식 이력 그래프 / rebase 방식 이력 그래프
 
+Rebase 방식 이력 그래프
+
+```
+* 7e48847 (HEAD -> main, feature/compute-layout) update: add compute layout section
+| *   c0496ec (origin/feature/compute-layout) Merge pull request #1 from hsmint/feature/udev-rules
+| |\
+| | * efbd9bb (origin/feature/udev-rules) Merge branch 'feature/compute-layout' into feature/udev-rules
+| |/|
+|/|/
+| * f9c71c7 update: add compute layout section
+* | b2a7074 update: add udev rules section
+|/
+* c872caf (origin/main, origin/HEAD, main) Initial Commit 🚀
+```
+
+Merge 방식 이력 그래프
+
+```
+*   c0496ec (HEAD -> main, origin/feature/compute-layout, feature/compute-layout) Merge pull request #1 from hsmint/feature/udev-rules
+|\
+| *   efbd9bb (origin/feature/udev-rules) Merge branch 'feature/compute-layout' into feature/udev-rules
+| |\
+| |/
+|/|
+* | f9c71c7 update: add compute layout section
+| * b2a7074 update: add udev rules section
+|/
+* c872caf (origin/main, origin/HEAD) Initial Commit 🚀
+
+Merge 방식은 브랜치가 합쳐진 시점에 merge commit이 생기고, rebase 방식은 브랜치가 합쳐지면서 commit들이 재배치되어 merge commit이 생기지 않는다. 따라서 rebase 방식은 이력이 더 깔끔하게 보인다.
+
 ### 3-5. 언제 merge를, 언제 rebase를 쓸지
+
+- merge: 여러 개발자가 동시에 작업하는 경우, 각자의 브랜치를 유지하면서 병합할 때 사용한다. 충돌 해결 후 병합 커밋을 남기므로 이력이 명확하게 남는다.
+- rebase: 이력이 깔끔하게 유지되며, 병합 커밋이 생기지 않아 히스토리가 단순해진다. 공유된 이력을 rebase하면 전체의 저장소가 꼬이기 때문에 개인이 가진 로컬 커밋에만 사용한다.
