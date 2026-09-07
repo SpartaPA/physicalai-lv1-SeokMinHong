@@ -9,6 +9,16 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Discover the interpreter before ament_cmake. The local Conda installation
+# otherwise globally links Python3::Python, loading a second Python runtime
+# when the generated message extension is imported on macOS.
+if(APPLE)
+  if(NOT Python3_EXECUTABLE)
+    find_program(Python3_EXECUTABLE python3)
+  endif()
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+endif()
+
 find_package(ament_cmake REQUIRED)
 # rosidl_generate_interfaces 매크로를 제공하는 패키지
 find_package(rosidl_default_generators REQUIRED)

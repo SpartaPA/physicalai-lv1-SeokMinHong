@@ -24,8 +24,7 @@ QoS 선택 이유 (문제 7 의 "왜 이 설정이 맞는가")
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from rclpy.qos import (DurabilityPolicy, HistoryPolicy, QoSProfile,
-                       ReliabilityPolicy)
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
 from turtle_interfaces.msg import Waypoint, WaypointList
 
 

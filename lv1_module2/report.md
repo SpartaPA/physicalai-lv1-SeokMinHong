@@ -135,19 +135,104 @@ float32 angular_velocity
 ros2 topic hz /turtle_distance
 ```
 
-![turtle_distance_hz](./images/05_turtle_distance_hz.png)
-
+![turtle_distance_hz](./images/06_turtle_distance_hz.png)
 
 ### 3-3. 구독자 경고 로그 (터미널 출력)
 
-![turtle_distance_warning](./images/06_turtle_warning.png)
+![turtle_distance_warning](./images/07_turtle_warning.png)
 
 ### 3-4. 구독자 2개 동시 수신 확인 (양쪽 로그)
 
+![turtle_log](./images/08_turtle_log.png)
 
 
 ### 3-5. 주행 캡쳐 (turtlesim 화면)
 
-![turtlesim_capture](./images/04_turtlesim_draw.png)
+![turtlesim_capture](./images/09_turtle_draw.png)
 
 ### 3-6. Ctrl+C 정상 종료 화면 (출력)
+
+```
+❯ ros2 run turtle_py ex03_distance_publisher
+[INFO] [1788751205.927320333] [turtle_distance_publisher]: turtle_distance_publisher 시작: publish_rate=10.0 Hz
+[INFO] [1788751205.927668085] [turtle_distance_publisher]: DistancePublisher 노드가 시작되었습니다. Ctrl+C 로 종료합니다.
+[WARN] [1788751206.025237845] [turtle_distance_publisher]: 아직 /turtle1/pose 를 받지 못했습니다
+[WARN] [1788751207.025803721] [turtle_distance_publisher]: 아직 /turtle1/pose 를 받지 못했습니다
+[WARN] [1788751208.126126204] [turtle_distance_publisher]: 아직 /turtle1/pose 를 받지 못했습니다
+^C[INFO] [1788751209.112969163] [turtle_distance_publisher]: Ctrl+C — 정상 종료합니다
+```
+
+## 4. rclcpp 노드 작성 — C++ 발행자와 구독자
+
+### 4-1. `colcon build` 성공 출력
+
+```
+pa17@pa17 ~/S/p/l/ros2_ws (main)> colcon build
+Starting >>> turtle_interfaces
+Starting >>> turtle_cpp
+Finished <<< turtle_interfaces [3.45s]
+Starting >>> turtle_py
+Finished <<< turtle_py [0.44s]
+Finished <<< turtle_cpp [5.41s]
+
+Summary: 3 packages finished [5.52s]
+```
+
+![colcon_build](./images/10_colcon_build.png)
+
+### 4-2. rclpy 발행에서 rclpp 구독까지 이어진 로그
+
+![turtle_pub_sub](./images/11_rclpy_rclcpp.png)
+
+### 4-3. rclpy와 rclcpp 대응 관계표 - 노드 생성 / 타이머 / 콜백/ 종료
+
+| 종류 | rclpy | rclcpp |
+|---|---|---|
+| 노드 생성 | `Node("node_name")` | `rclcpp::Node::make_shared("node_name")` |
+| 타이머 생성 | `self.create_timer(period, callback)` | `this->create_wall_timer(period, callback)` |
+| 콜백 함수 | 함수 객체 그대로 | `std::bind(&ClassName::callback, this)` |
+| 종료 | `rclpy.shutdown()` | `rclcpp::shutdown()` |
+
+## 10. 시각화·기록·테스트로 검증하기
+
+### 10-1. `rqt_graph` 캡쳐
+
+![rqt_graph](./images/rqt_graph.png)
+
+### 10-2. RViz2 TF + 경유점 마커 캡쳐
+
+![rviz2_tf_marker](./images/rviz2_tf_marker.png)
+
+### 10-3 `ros2 bag play` 재생 중 구독자 로그 - 기록된 토픽과 메시지 수
+
+![ros2_bag_play](./images/ros2_bag_play.png)
+
+`ros2 bag play` 재생 중 구독자 로그
+
+![ros2_bag_info](./images/ros2_bag_info.png)
+
+기록된 토픽과 메시지 수:
+- `/turtle1/pose` : 1950개
+- `/turtle_distance` : 313개
+
+### 10-4 `pytest` 통과 출력
+
+|대상 | 정상 입력 | 경계값 | 예외 상황 |
+|---|---|---|---|
+| 목표까지의 거리 `distance_to_origin` / `distance_between` | 3-4-5 삼각형, turtlesim 시작 위치 | 원점 자신(0), 같은 두 점(0) | 숫자가 아닌 입력 → `TypeError`/`ValueError` |
+| 목표를 향한 각도 `normalize_angle` / `angle_to_goal` | 0도·90도·-90도 | 정확히 뒤(±pi), 한 바퀴(2pi+0.3), 3pi | 정규화가 없으면 pi 를 넘는 값 → 항상 짧은 쪽인지 확인 |
+| 경유점 도달 판정 `is_reached` | 안/밖 각각 | 거리 == 허용 오차(포함), 허용 오차 0 | 음수 허용 오차 → `ValueError` |
+
+![pytest_pass](./images/pytest_pass.png)
+
+### 10-5 함수를 틀리게 바꿨을 때 실패 출력
+
+```
+return math.hypot(gx - x, gy - y) -> return math.hypot(gx - y, gy - x)
+```
+
+![pytest_fail](./images/pytest_fail.png)
+
+### 10-6 예외 처리·logging 동작 확인
+
+![pytest_exception](./images/turtle_exception.png)

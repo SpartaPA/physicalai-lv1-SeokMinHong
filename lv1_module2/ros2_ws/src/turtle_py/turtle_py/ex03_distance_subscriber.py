@@ -13,6 +13,8 @@
 --symlink-install 로 빌드했다면 src/ 의 YAML 수정이 바로 반영됩니다.)
 """
 
+import time
+
 import rclpy
 from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
 from rclpy.executors import ExternalShutdownException
@@ -76,6 +78,7 @@ def main(args=None):
         rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):
         node.get_logger().info('Ctrl+C — 정상 종료합니다')
+        time.sleep(0.5)  # 로그가 출력될 시간을 잠시 줍니다
     finally:
         node.destroy_node()
         if rclpy.ok():

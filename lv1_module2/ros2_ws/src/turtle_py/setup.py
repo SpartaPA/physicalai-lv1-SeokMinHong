@@ -66,6 +66,9 @@ setup(
             # 문제 7
             'ex07_qos_sensor_publisher = turtle_py.ex07_qos_sensor_publisher:main',
             'ex07_qos_subscriber = turtle_py.ex07_qos_subscriber:main',
+
+            'ex10_tf2_broadcast = turtle_py.ex10_tf2_broadcast:main',
+            'ex10_marker_publisher = turtle_py.ex10_marker_publisher:main',
         ],
     },
 )

@@ -15,8 +15,7 @@ class TurtleDrawShape(Node):
         super().__init__("turtle_draw")
 
         self.declare_parameter(
-            "sides", 3,
-            ParameterDescriptor(description="도형의 변 개수 3, 5, 6만 가능")
+            "sides", 4
         )
         self.sides = self.get_parameter("sides").value
 
@@ -32,8 +31,8 @@ class TurtleDrawShape(Node):
                 continue
             if param.type != param.Type.INTEGER:
                 return SetParametersResult(successful=False, reason="sides 는 정수여야 합니다")
-            elif param.value not in [3, 5, 8]:
-                return SetParametersResult(successful=False, reason="sides 는 3, 5, 8만 가능합니다")
+            elif param.value not in [4]:
+                return SetParametersResult(successful=False, reason="sides 는 4만 가능합니다")
             self.get_logger().info(f"sides 변경 → {param.value}")
         return SetParametersResult(successful=True)
 

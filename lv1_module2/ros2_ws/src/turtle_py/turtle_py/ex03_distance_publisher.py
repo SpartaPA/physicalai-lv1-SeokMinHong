@@ -18,6 +18,7 @@ turtle_py 패키지에 직접 구현해야 합니다. (정사각형 주행 노�
 """
 
 import math
+import time
 
 import rclpy
 from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
@@ -50,6 +51,11 @@ class DistancePublisher(Node):
             'publish_rate', 10.0,
             ParameterDescriptor(description='/turtle_distance 발행 주기 [Hz], 0 보다 커야 함'))
         rate = self.get_parameter('publish_rate').value
+        if rate <= 0.0:
+            # 문제 10 — 잘못된 파라미터에도 노드가 죽지 않아야 한다.
+            self.get_logger().warn(
+                f'publish_rate={rate} 는 사용할 수 없습니다. 기본값 10.0 Hz 로 대체합니다.')
+            rate = 10.0
 
         # ---------- 상태 ----------
         # 구독 콜백은 여기에 최신 자세를 저장만 합니다.

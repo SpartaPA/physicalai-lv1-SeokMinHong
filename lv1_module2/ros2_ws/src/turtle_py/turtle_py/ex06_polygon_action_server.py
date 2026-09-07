@@ -48,6 +48,23 @@ from turtle_interfaces.action import DrawPolygon
 from turtlesim.msg import Pose
 
 
+def distance_between(x, y, gx, gy):
+    """현재 위치에서 목표까지의 거리."""
+    return math.hypot(gx - x, gy - y)
+
+
+def angle_to_goal(x, y, theta, gx, gy):
+    """목표 방향과 현재 방향의 차이를 -pi ~ pi 로 반환."""
+    return normalize_angle(math.atan2(gy - y, gx - x) - theta)
+
+
+def is_reached(x, y, gx, gy, tolerance):
+    """허용 오차 경계를 포함한 도달 판정."""
+    if tolerance < 0:
+        raise ValueError('tolerance must be non-negative')
+    return distance_between(x, y, gx, gy) <= tolerance
+
+
 def normalize_angle(a: float) -> float:
     """각도를 -pi ~ pi 로 정규화. (문제 10 의 pytest 대상 함수 중 하나)"""
     return math.atan2(math.sin(a), math.cos(a))
@@ -137,7 +154,7 @@ class PolygonActionServer(Node):
         while True:
             self._check_interrupt(goal_handle)
             cur = self._latest_pose
-            traveled = math.hypot(cur.x - start.x, cur.y - start.y)
+            traveled = distance_between(start.x, start.y, cur.x, cur.y)
             remaining = length - traveled
             if remaining <= 0.0:
                 break
