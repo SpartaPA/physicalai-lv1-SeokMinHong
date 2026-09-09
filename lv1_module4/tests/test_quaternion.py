@@ -42,7 +42,9 @@ def q_pair():
 @pytest.mark.parametrize("t", TS)
 def test_slerp_is_unit_norm(q_pair, t):
     # TODO: slerp(q0, q1, t) 의 노름이 1 인지 검사
-    raise NotImplementedError("test_slerp_is_unit_norm 을 작성하세요")
+    q0, q1 = q_pair
+    result = slerp(q0, q1, t)
+    assert np.isclose(np.linalg.norm(result), 1.0)
 
 
 # --- 2. t = 0 / 1 에서 시작·목표 자세 -----------------------------------------
@@ -50,7 +52,11 @@ def test_slerp_is_unit_norm(q_pair, t):
 def test_slerp_endpoints(q_pair):
     # TODO: slerp(q0, q1, 0) 이 q0 과, slerp(q0, q1, 1) 이 q1 과 같은 회전인지 검사
     #       (부호가 다를 수 있으므로 회전행렬로 비교하거나 |q . q_ref| == 1 로 비교)
-    raise NotImplementedError("test_slerp_endpoints 를 작성하세요")
+    q0, q1 = q_pair
+    result_start = slerp(q0, q1, 0)
+    result_goal = slerp(q0, q1, 1)
+    assert np.isclose(np.abs(np.dot(result_start, q0)), 1.0)
+    assert np.isclose(np.abs(np.dot(result_goal, q1)), 1.0)
 
 
 # --- 여기부터는 추가 테스트 (권장) -------------------------------------------

@@ -38,7 +38,19 @@ def pca_axes(P):
     centroid : (3,) 점군 중심
     """
     # TODO: 문제 5-1
-    raise NotImplementedError("pca_axes 를 구현하세요")
+    centroid = np.mean(P, axis=0)
+    X = P - centroid
+
+    C = X.T @ X / (len(P) - 1)
+    eigvals, axes = np.linalg.eigh(C)
+
+    idx = np.argsort(eigvals)[::-1]
+    eigvals = eigvals[idx]
+    axes = axes[:, idx]
+
+    if np.linalg.det(axes) < 0:
+        axes[:, -1] *= -1
+    return axes, eigvals, centroid
 
 
 def kabsch(P, Q):
@@ -56,7 +68,17 @@ def kabsch(P, Q):
     t : (3,) 병진
     """
     # TODO: 문제 5-3
-    raise NotImplementedError("kabsch 를 구현하세요")
+    cP = np.mean(P, axis=0)
+    cQ = np.mean(Q, axis=0)
+    X = P - cP
+    Y = Q - cQ
+    H = X.T @ Y
+    U, S, Vt = np.linalg.svd(H)
+    d = 1.0 if np.linalg.det(Vt.T @ U.T) >= 0 else -1.0
+    R = Vt.T @ np.diag([1.0, 1.0, d]) @ U.T
+    t = cQ - R @ cP
+    return R, t
+
 
 
 def fit_plane_lstsq(P):
@@ -74,7 +96,26 @@ def fit_plane_lstsq(P):
     residuals : (N,) 각 점의 부호 있는 평면까지의 거리 n . p + d
     """
     # TODO: 문제 5-5
-    raise NotImplementedError("fit_plane_lstsq 를 구현하세요")
+    P = np.asarray(P, dtype=float)
+    if P.shape[0] < 3:
+        raise ValueError("평면 피팅에는 점이 3개 이상 필요하다")
+
+    A = np.hstack((P[:, :2], np.ones((P.shape[0], 1))))
+    z = P[:, 2]
+    coeffs, _, rank, _ = np.linalg.lstsq(A, z, rcond=None)
+
+    if rank == 3:
+        a, b, c = coeffs
+        n = np.array([a, b, -1.0])
+        L = np.linalg.norm(n)
+        normal, d = n / L, c / L
+    else:
+        centroid = P.mean(axis=0)
+        _, _, Vt = np.linalg.svd(P - centroid)
+        normal = Vt[-1]
+        d = -normal @ centroid
+
+    return normal, float(d), P @ normal + d
 
 
 def remove_outliers(P, residuals, k: float = 3.0):
@@ -90,4 +131,8 @@ def remove_outliers(P, residuals, k: float = 3.0):
     mask : (N,) bool — True 가 남긴 점. P 와 대응 점군에 같은 mask 를 적용해야 Kabsch 대응이 유지된다
     """
     # TODO: 문제 5-5
-    raise NotImplementedError("remove_outliers 를 구현하세요")
+    median_res = np.median(residuals)
+    mad = 1.4826 * np.median(np.abs(residuals - median_res))
+    sigma = mad if mad > 0 else np.std(residuals)
+    mask = np.abs(residuals) < k * sigma
+    return P[mask], mask

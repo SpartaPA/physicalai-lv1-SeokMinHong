@@ -18,7 +18,7 @@
 | `src/` | `plot3d.py` (3D 헬퍼, 애니메이션), `pose_estimation.rotation_angle_deg` | `pose_pipeline.py`, `quaternion.py`, `trajectory.py`, `pose_estimation.py` 의 함수 본문 |
 | `src/` (모듈 ③) | — | **모듈 ③ 에서 만든 `vectors.py`, `rotation.py`, `transform.py`, `coordinate_chain.py` 를 복사해 넣기** (`src/README_module3.md`) |
 | `tests/` | `conftest.py` | `test_pose_pipeline.py`, `test_quaternion.py`, `test_trajectory.py` 의 테스트 본문 |
-| 기타 | `requirements.txt`, `presentation_template.md` | `presentation.md` (템플릿 복사 후 작성), `demo.gif` (문제 6 셀이 생성) |
+| 기타 | `requirements.txt`, `presentation.md` | `presentation.md` (템플릿 복사 후 작성), `demo.gif` (문제 6 셀이 생성) |
 
 검증 셀은 수정하지 마세요. 검증 셀의 `[PASS]`/`[FAIL]` 이 채점의 1차 근거입니다.
 

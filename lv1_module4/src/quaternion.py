@@ -31,7 +31,35 @@ def matrix_to_quaternion(R) -> np.ndarray:
     반환값은 반드시 정규화하고, w >= 0 이 되도록 부호를 맞춘다 (비교가 편해진다).
     """
     # TODO: 문제 3-1
-
+    t = np.trace(R)
+    if t > 0:
+        s = 2 * np.sqrt(1 + t)
+        w = s / 4
+        x = (R[2, 1] - R[1, 2]) / s
+        y = (R[0, 2] - R[2, 0]) / s
+        z = (R[1, 0] - R[0, 1]) / s
+    elif R[0, 0] >= R[1, 1] and R[0, 0] >= R[2, 2]:
+        s = 2 * np.sqrt(1 + R[0, 0] - R[1, 1] - R[2, 2])
+        x = s / 4
+        w = (R[2, 1] - R[1, 2]) / s
+        y = (R[0, 1] + R[1, 0]) / s
+        z = (R[0, 2] + R[2, 0]) / s
+    elif R[1, 1] >= R[0, 0] and R[1, 1] >= R[2, 2]:
+        s = 2 * np.sqrt(1 + R[1, 1] - R[0, 0] - R[2, 2])
+        y = s / 4
+        w = (R[0, 2] - R[2, 0]) / s
+        x = (R[0, 1] + R[1, 0]) / s
+        z = (R[1, 2] + R[2, 1]) / s
+    else:
+        s = 2 * np.sqrt(1 + R[2, 2] - R[0, 0] - R[1, 1])
+        z = s / 4
+        w = (R[1, 0] - R[0, 1]) / s
+        x = (R[0, 2] + R[2, 0]) / s
+        y = (R[1, 2] + R[2, 1]) / s
+    quaternion = np.array([x, y, z, w], dtype=float) / np.sqrt(x**2 + y**2 + z**2 + w**2)
+    if quaternion[3] < 0:
+        quaternion = -quaternion
+    return quaternion
 
 
 def quaternion_to_matrix(q) -> np.ndarray:
@@ -44,7 +72,19 @@ def quaternion_to_matrix(q) -> np.ndarray:
     입력이 정확히 단위가 아닐 수 있으므로 먼저 정규화한다. q 와 -q 는 같은 R 을 준다.
     """
     # TODO: 문제 3-1
-    raise NotImplementedError("quaternion_to_matrix 를 구현하세요")
+    q = np.array(q, dtype=float)
+    if q.shape != (4,):
+        raise ValueError("쿼터니언이 길이 4 배열이 아닙니다.")
+
+    q = q / np.sqrt(np.dot(q, q))
+    x, y, z, w = q
+
+    R = np.array([
+        [1 - 2*(y**2 + z**2), 2*(x*y - w*z), 2*(x*z + w*y)],
+        [2*(x*y + w*z), 1 - 2*(x**2 + z**2), 2*(y*z - w*x)],
+        [2*(x*z - w*y), 2*(y*z + w*x), 1 - 2*(x**2 + y**2)]
+    ])
+    return R
 
 
 def quat_angle(q0, q1) -> float:
@@ -53,7 +93,8 @@ def quat_angle(q0, q1) -> float:
         angle = 2 * arccos(|q0 . q1|)
     """
     # TODO: 문제 3-2 (slerp 안에서 재사용)
-    raise NotImplementedError("quat_angle 을 구현하세요")
+    d = abs(float(np.dot(np.array(q0, dtype=float), np.array(q1, dtype=float))))
+    return float(2 * np.arccos(np.clip(d, 0.0, 1.0)))
 
 
 def slerp(q0, q1, t: float, eps: float = 1e-8) -> np.ndarray:
@@ -71,7 +112,19 @@ def slerp(q0, q1, t: float, eps: float = 1e-8) -> np.ndarray:
     반환값은 단위 쿼터니언이어야 한다. t = 0 이면 q0, t = 1 이면 (부호를 맞춘) q1.
     """
     # TODO: 문제 3-2 · 3-5
-    raise NotImplementedError("slerp 를 구현하세요")
+    q0 = np.array(q0, dtype=float)
+    q1 = np.array(q1, dtype=float)
+    d = np.dot(q0, q1)
+    if d < 0:
+        q1 = -q1
+        d = -d
+    omega = np.arccos(np.clip(d, -1.0, 1.0))
+    if d > 1 - eps:
+        q = (1 - t) * q0 + t * q1
+        return q / np.sqrt(np.dot(q, q))
+    else:
+        q = (np.sin((1 - t) * omega) * q0 + np.sin(t * omega) * q1) / np.sin(omega)
+        return q / np.sqrt(np.dot(q, q))
 
 
 def lerp_quat(q0, q1, t: float, normalize: bool = False) -> np.ndarray:
@@ -83,4 +136,11 @@ def lerp_quat(q0, q1, t: float, normalize: bool = False) -> np.ndarray:
     벗어나는지 관찰하는 데 쓴다. normalize=True 이면 정규화한다 (NLERP).
     """
     # TODO: 문제 3-4
-    raise NotImplementedError("lerp_quat 를 구현하세요")
+    q0 = np.array(q0, dtype=float)
+    q1 = np.array(q1, dtype=float)
+    if np.dot(q0, q1) < 0:
+        q1 = -q1
+    q = (1 - t) * q0 + t * q1
+    if normalize:
+        q = q / np.sqrt(np.dot(q, q))
+    return q

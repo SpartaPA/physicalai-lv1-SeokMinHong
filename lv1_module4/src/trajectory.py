@@ -14,6 +14,7 @@
 """
 
 from __future__ import annotations
+from scipy.interpolate import CubicSpline
 
 import numpy as np
 
@@ -26,7 +27,12 @@ def linear_interp(t_wp, q_wp, t) -> np.ndarray:
     위치는 이어지지만 경유점에서 속도가 불연속(꺾임)이다.
     """
     # TODO: 문제 4-1
-    raise NotImplementedError("linear_interp 를 구현하세요")
+    t_wp = np.array(t_wp, dtype=float)
+    q_wp = np.array(q_wp, dtype=float)
+    if q_wp.ndim == 1:
+        return np.interp(t, t_wp, q_wp)
+    return np.stack([np.interp(t, t_wp, q_wp[:, d])
+                     for d in range(q_wp.shape[1])], axis=-1)
 
 
 def cubic_spline_interp(t_wp, q_wp, t, bc_type: str = "natural") -> np.ndarray:
@@ -35,7 +41,9 @@ def cubic_spline_interp(t_wp, q_wp, t, bc_type: str = "natural") -> np.ndarray:
     bc_type : 양끝 경계 조건. "natural" (양끝 가속도 0) 또는 "clamped" (양끝 속도 0).
     """
     # TODO: 문제 4-1
-    raise NotImplementedError("cubic_spline_interp 를 구현하세요")
+    t_wp = np.array(t_wp, dtype=float)
+    q_wp = np.array(q_wp, dtype=float)
+    return CubicSpline(t_wp, q_wp, bc_type=bc_type)(t)
 
 
 def quintic_profile(t, t0: float, tf: float, q0, qf,
@@ -57,7 +65,14 @@ def quintic_profile(t, t0: float, tf: float, q0, qf,
     q, qd, qdd : 위치, 속도, 가속도 (해석적 미분. 유한차분이 아니다)
     """
     # TODO: 문제 4-4
-    raise NotImplementedError("quintic_profile 을 구현하세요")
+    tav = (t - t0) / (tf - t0)
+    s = 10 * tav ** 3 - 15 * tav ** 4 + 6 * tav ** 5
+    sd = (30 * tav ** 2 - 60 * tav ** 3 + 30 * tav ** 4) / (tf - t0)
+    sdd = (60 * tav - 180 * tav ** 2 + 120 * tav ** 3) / (tf - t0) ** 2
+    if np.ndim(q0) == 0 and np.ndim(qf) == 0:
+        return q0 + (qf - q0) * s, (qf - q0) * sd, (qf - q0) * sdd
+    qd = (qf - q0)
+    return q0 + qd * s.reshape(-1, 1), qd * sd.reshape(-1, 1), qd * sdd.reshape(-1, 1)
 
 
 def finite_diff(y, t) -> np.ndarray:
@@ -67,4 +82,4 @@ def finite_diff(y, t) -> np.ndarray:
     속도 = finite_diff(q, t),  가속도 = finite_diff(속도, t)
     """
     # TODO: 문제 4-2
-    raise NotImplementedError("finite_diff 를 구현하세요")
+    return np.gradient(y, t, axis=0)

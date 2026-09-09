@@ -90,7 +90,7 @@ class PosePipeline:
     def set_joint_angle(self, theta: float) -> "PosePipeline":
         """관절 각도 [rad] 를 바꾼다. 메서드 체이닝을 위해 self 를 돌려준다."""
         # TODO: 문제 2-2
-        self.joint_angle = np.degrees(theta)
+        self.joint_angle = np.radians(theta)
         return self
 
     # ------------------------------------------------------------- 점군 변환
